@@ -1,0 +1,186 @@
+CREATE TABLE `address` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `location` varchar(100),
+  `category` varchar(10),
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `users_id` bigint NOT NULL
+);
+
+CREATE TABLE `users` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `nickname` varchar(10),
+  `email` varchar(30),
+  `phone_number` varchar(13),
+  `profile` varchar(2000),
+  `login_device` varchar(2000),
+  `users_pw` varchar(200),
+  `social_login` varchar(50),
+  `point` Integer,
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp
+);
+
+CREATE TABLE `review` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `context` text,
+  `picture` varchar(2000),
+  `star` decimal,
+  `business_context` text DEFAULT null,
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `orders_id` bigint NOT NULL
+);
+
+CREATE TABLE `restaurant` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(20),
+  `location` varchar(50),
+  `category` varchar(30),
+  `is_beamin_one` boolean,
+  `is_packing` boolean,
+  `is_bmart` boolean,
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp
+);
+
+CREATE TABLE `business_info` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `reprenstative` varchar(10),
+  `restaurant_name` varchar(10),
+  `location` varchar(100),
+  `registration_number` varchar(20),
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `restaurant_id` bigint NOT NULL
+);
+
+CREATE TABLE `restaurant_info` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `profile` varchar(2000),
+  `introduction` text,
+  `name` varchar(100),
+  `run_time` varchar(200),
+  `rest_date` varchar(200),
+  `phone` varchar(13),
+  `delivery_area` varchar(200),
+  `Facility` varchar(200),
+  `guide` text,
+  `tip` varchar(1000),
+  `origin` varchar(1000),
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `restaurant_id` bigint NOT NULL
+);
+
+CREATE TABLE `orders` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `request` varchar(60),
+  `is_delivery` boolean,
+  `is_beamin_one` boolean,
+  `all_price` decimal,
+  `is_cash_reciept` boolean,
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `users_id` bigint NOT NULL,
+  `restaurant_id` bigint NOT NULL
+);
+
+CREATE TABLE `coupon` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `discount` Integer NOT NULL,
+  `least_price` decimal NOT NULL,
+  `start_at` timestamp,
+  `end_at` timestamp,
+  `is_beamin_one` boolean,
+  `is_packing` boolean,
+  `is_bmart` boolean,
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `users_id` BIGINT NOT NULL
+);
+
+CREATE TABLE `users_coupon` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `users_id` BIGINT NOT NULL,
+  `coupon_id` BIGINT NOT NULL
+);
+
+CREATE TABLE `menu` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(30),
+  `description` varchar(100),
+  `is_hot` boolean,
+  `is_main` boolean,
+  `default_name` varchar(255) DEFAULT null,
+  `default_price` varchar(255) NOT NULL,
+  `default_select` Integer,
+  `plus_name` varchar(255) DEFAULT null,
+  `plus_price` varchar(255) DEFAULT null,
+  `plus_select` varchar(255),
+  `profile` varchar(2000),
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `restaurant_id` bigint NOT NULL
+);
+
+CREATE TABLE `tip` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `default_least` decimal,
+  `default_price` decimal,
+  `location_name` varchar(1000),
+  `location_price` decimal,
+  `other_name` varchar(1000),
+  `other_price` decimal,
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `restaurant_id` bigint NOT NULL
+);
+
+CREATE TABLE `orders_menu` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `menu_default_select` Integer NOT NULL,
+  `menu_plus_select` varchar(255) DEFAULT null,
+  `status` Integer,
+  `created_at` timestamp,
+  `updated_at` timestamp,
+  `orders_id` bigint NOT NULL,
+  `menu_id` bigint NOT NULL
+);
+     
+ALTER TABLE `address` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) on update cascade on delete cascade;
+
+ALTER TABLE `review` ADD FOREIGN KEY (`orders_id`) REFERENCES `orders` (`id`)on update cascade on delete cascade;
+
+ALTER TABLE `restaurant_info` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
+
+ALTER TABLE `orders` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
+
+ALTER TABLE `orders` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
+
+ALTER TABLE `users_coupon` ADD FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
+
+ALTER TABLE `users_coupon` ADD FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`);
+
+ALTER TABLE `menu` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
+
+ALTER TABLE `tip` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
+
+ALTER TABLE `orders_menu` ADD FOREIGN KEY (`orders_id`) REFERENCES `orders` (`id`);
+
+ALTER TABLE `orders_menu` ADD FOREIGN KEY (`menu_id`) REFERENCES `menu` (`id`);
+
+ALTER TABLE `business_info` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
