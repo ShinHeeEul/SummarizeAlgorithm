@@ -3,7 +3,6 @@
 
 # 안정 정렬 vs 불안정 정렬
 
----
 
 ## 안정 정렬 (Stable Sort)
 - 안정 정렬은 중복된 값을 입력 순서와 동일하게 정렬하는 정렬 알고리즘
@@ -13,7 +12,6 @@
 - 중복된 값이 입력 순서와 동일하지 않게 정렬되는 알고리즘
 - ex) 퀵 정렬, 선택 정렬, 계수 정렬
 
----
 
 # 정렬 종류
 
@@ -55,17 +53,13 @@ class Topological {
 }
 ```
 
----
-
 # DFS vs BFS
 - 너무 쉽다 이건
 
----
 
 # 이분탐색
 - 시간복잡도 : O(logN)
 
----
 # 유니온-파인드(Union Find)
 - 그래프 알고리즘으로 두 노드가 같은 그래프에 속하는지 판별하는 알고리즘.
 - 서로소 집합, 상호 베타적 집합, 분리 집합으로도 불림
@@ -77,11 +71,13 @@ class Topological {
   1) x와 y의 부모노드를 찾는다.
   2) 둘이 같은 그래프라면 false를 반환하고
   3) x가 y보다 작다면 arr[y] = x, 반대라면 arr[x] = y
+
 - find(x)
   1) parent[x] == x라면 x를 반환하고
   2) 아니라면 find(parent[x]);
      - 이 과정에서 parent[x] = find(parent[x])를 반환하면 경로 압축을 할 수 있다.
 
+- 코드 템플릿
 ```java
 class UnionFind {
     boolean union(int x, int y) {
@@ -107,18 +103,13 @@ class UnionFind {
         return arr[x] = find(arr[x]);
     }
 }
-
 ```
-
----
 
 # 밸만-포드 알고리즘
 
----
+# 클로이드-워셜 알고리즘
 
 # 다익스트라 알고리즘
-
----
 
 # LCS(Longest Common Subsequence) : 최장 부분 수열 알고리즘
 - dp를 응용한 최장 부분 수열 알고리즘
@@ -134,8 +125,6 @@ class UnionFind {
 1) arr[i-1][j] or arr[i][j-1] 중 같은 값이 있다면 거기로 이동
 2) 없다면 arr[i-1][j-1]로 이동하면서 arr[i][j] 값을 answer 문자열 앞에 더하기
 3) 반복이 끝나면 answer 출력
-
----
 
 # LIS(Longest Increasing Subsequence) : 최장 증가 부분 수열
 - 어떠한 수열에서 오름차순으로 증가하는 가장 긴 부분수열을 찾는 것
@@ -154,4 +143,8 @@ class UnionFind {
    3) 현재 수가 배열의 마지막 값보다 작다면 이분 탐색을 통해 들어갈 위치를 찾고 교체.
       1) 이분 탐색 시, start = 0, end = 현재 위치이며 start < end동안 반복 -> end 값으로 교체
 
----
+# 투 포인터
+
+# MST(Minimum Spanning Tree)
+
+# Bit Masking
