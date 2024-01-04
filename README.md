@@ -105,11 +105,123 @@ class UnionFind {
 }
 ```
 
-# 밸만-포드 알고리즘
+# 그래프 최단 거리 구하는 알고리즘들
+## 밸만-포드 알고리즘
+- 그래프 최단 경로 구하는 알고리즘
+- 하나의 정점에서 출발하는 최단 거리를 구하며 음수 사이클이 없어야 함.(음수 가중치는 허용)
+- 다익스트라에 비해 조금 더 시간복잡도가 증가한 대신 음수 가중치를 처리할 수 있음.
+- 시간복잡도 : O(EV)
 
-# 클로이드-워셜 알고리즘
+1) 출발 노드는 0 나머지는 INF로 초기화
+2) 간선 m개를 하나씩 살펴보며 dist[v]가 무한대가 아닐 때 dist[v] = min(dist[v], dist[w] + cost(w,v))
+3) 1)~2)과정을 모든 노드간 반복
 
-# 다익스트라 알고리즘
+- 음수 사이클 확인하기
+  - n개 만큼 반복하는 과정을 한번 더 했을 때 바뀌는 값이 있다면 음수 사이클이 존재하는 것.
+
+- 코드 템플릿
+```java
+class BellmanFord {
+    class Edge {
+        int v; //나가는 노드
+        int w; //들어오는 노드
+        int cost;
+        
+        public Edge(int v, int w, int cost) {
+            this.v = v;
+            this.w = w;
+            this.cost = cost;
+        }
+    }
+    
+    static ArrayList<Edge> graph;
+    
+    public boolean BellmanFord(int n, int m, int start) {
+        int[] dist = new int[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[start] = 0;
+        
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+                Edge edge = graph.get(j);
+                if(dist[edge.v] != Integer.MAX_VALUE) {
+                    dist[edge.w] = Math.min(dist[edge.w], dist[edge.v] + edge.cost);
+                }
+            }
+        }
+
+        //음수 사이클 검증
+        for(int j = 0; j < m; j++) {
+            Edge edge = list.get(j);
+            if(dist[edge.v] != Integer.MAX_VALUE && dist[edge.w] > dist[edge.v] + edge.cost) {
+                System.out.println("음수");
+                return;
+            }
+
+        }
+    }
+}
+```
+## 플로이드-워셜 알고리즘
+
+## 다익스트라 알고리즘
+- 음의 가중치가 없는 그래프의 한 노드에서 각 모든 노드까지의 최단거리를 구하는 알고리즘을 말함.
+- 기본적으로 그리디 + 다이나믹 프로그래밍 기법
+- 시간복잡도 : O(ElogV)
+
+1) 아직 방문하지 않은 정점 중 출발지로부터 가장 거리가 짧은 정점을 방문
+2) 해당 정점을 거쳐 갈 수 있는 정점의 거리가 이전 기록한 값보다 적으면 갱신
+
+- 코드 템플릿
+
+```java
+import java.util.PriorityQueue;
+
+class Dijkstra {
+    class Node implements Comparable<Node> {
+        int index;
+        int cost;
+
+        public Node(int index, int cost) {
+            this.index = index;
+            this.cost = cost;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return Integer.compare(this.cost, o.cost);
+        }
+    }
+
+    static ArrayList<Node>[] graph;
+
+    public void Dijkstra(int n, int start) {
+        boolean[] check = new boolean[n + 1];
+        int[] dist = new int[n + 1];
+        final int INF = Integer.MAX_VALUE;
+        Arrays.fill(dist, INF);
+        dist[start] = 0;
+
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.offer(new Node(start, 0));
+        
+        while(!pq.isEmpty()) {
+            int nowVertex = pq.poll().index;
+            
+            if(check[nowVertex]) continue;
+            check[nowVertex] = true;
+            
+            for(Node next : graph[nowVertex]) {
+                if(dist[next.index] > dist[nowVertex] + next.cost) {
+                    dist[next.index] = Math.min(dist[next.index], dist[nowVertex] + next.cost);
+                    pq.offer(new Node(next.index, dist[next.index]));
+                }
+            }
+        }
+    }
+}
+```
+
 
 # LCS(Longest Common Subsequence) : 최장 부분 수열 알고리즘
 - dp를 응용한 최장 부분 수열 알고리즘
@@ -128,6 +240,7 @@ class UnionFind {
 
 # LIS(Longest Increasing Subsequence) : 최장 증가 부분 수열
 - 어떠한 수열에서 오름차순으로 증가하는 가장 긴 부분수열을 찾는 것
+
 ## dp를 이용한 방법
    - 정확한 LIS를 구할 때 사용
    - 시간 복잡도 : O(N ^ 2)
