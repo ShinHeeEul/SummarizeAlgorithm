@@ -163,6 +163,40 @@ class BellmanFord {
 }
 ```
 ## 플로이드-워셜 알고리즘
+- 음수 사이클이 없는 그래프 내의 모든 정점에서 각 모든 정점에 까지의 최단거리를 모두 구할 수 있는 알고리즘.
+- DP랑, 인접 행렬 이용
+- 모든 노드에서 모든 노드로 가는 최소 비용을 단계적으로 갱신하면서 진행되는 알고리즘
+- 시간복잡도 : O(N ^ 3)
+
+- 코드 템플릿
+```java
+public class FloydWarshall {
+    
+    public static void floydWarshall() {
+        int[][] D = new int[N][N];
+        
+        //갈 수 없는 경로 확인
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < N; j++) {
+                if(i == j) continue;
+                if(D[i][j] == 0) D[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        
+        //플로이드 워셜
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < N; j++) {
+                if(i == j) continue; //출발지와 경유지가 같으면 다음 탐색
+                
+                for(int k = 0; k < N; k++) {
+                    if(i == k || j == k) continue; //출발지와 도착지가 같거나 도착지가 경유지면 다음 탐색
+                    D[j][k] = Math.min(D[j][i] + D[i][k], D[j][k]); // 경유하거나 직접가거나 더 짧은 경로로 대체
+                }
+            }
+        }
+    }
+}
+```
 
 ## 다익스트라 알고리즘
 - 음의 가중치가 없는 그래프의 한 노드에서 각 모든 노드까지의 최단거리를 구하는 알고리즘을 말함.
@@ -227,7 +261,7 @@ class Dijkstra {
 - dp를 응용한 최장 부분 수열 알고리즘
 - 시간복잡도 : O(nm)
 
-1) dp를 2차원 배열(arr)로 선언
+1) arr을 2차원 배열(arr)로 선언
 2) 문자를 하나씩 비교
    1) 일치하는 문자가 나오면 arr[i][j] = arr[i-1][j-1] + 1
    2) 일치하지 않는 문자가 나온다면 arr[i][j] = max(arr[i-1][j], arr[i][j-1])
@@ -237,6 +271,29 @@ class Dijkstra {
 1) arr[i-1][j] or arr[i][j-1] 중 같은 값이 있다면 거기로 이동
 2) 없다면 arr[i-1][j-1]로 이동하면서 arr[i][j] 값을 answer 문자열 앞에 더하기
 3) 반복이 끝나면 answer 출력
+
+- 코드 템플릿
+```java
+public class LCS {
+    static int LCS(int N) {
+        String s1;
+        String s2;
+        int[][] dp = new int[N][N];
+        
+        for(int i = 1; i < N; i++) {
+            for(int j = 1; j < N; j++) {
+                if(s1.charAt(i-1) == s2.charAt(j-1)) {
+                    dp[i][j] = dp[i-1][j-1] + 1;
+                }
+                else {
+                    dp[i][j] = Math.max(dp[i][j-1], dp[i-1][j]);
+                }
+            }
+        }
+    }
+}
+
+```
 
 # LIS(Longest Increasing Subsequence) : 최장 증가 부분 수열
 - 어떠한 수열에서 오름차순으로 증가하는 가장 긴 부분수열을 찾는 것
@@ -256,6 +313,14 @@ class Dijkstra {
    3) 현재 수가 배열의 마지막 값보다 작다면 이분 탐색을 통해 들어갈 위치를 찾고 교체.
       1) 이분 탐색 시, start = 0, end = 현재 위치이며 start < end동안 반복 -> end 값으로 교체
 
+- 코드 템플릿
+```java
+public class LIS {
+    static void LIS(int N) {
+        
+    }
+}
+```
 # 투 포인터
 
 # MST(Minimum Spanning Tree)
