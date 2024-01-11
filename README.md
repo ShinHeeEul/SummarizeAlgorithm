@@ -315,14 +315,121 @@ public class LCS {
 
 - 코드 템플릿
 ```java
+// 이분 탐색으로 길이만 구함
 public class LIS {
     static void LIS(int N) {
-        
+        int[] arr = new int[N];
+        int[] lis = new int[N];
+        int current = 0;
+        for(int i = 0; i < N; i++) {
+            int target = arr[0];
+            if(i == 0) {
+                lis[0] = target;
+                continue;
+            } 
+            if(target > lis[current]) {
+                lis[++current] = target;
+            } else {
+                int start = 0;
+                int end = current;
+                while(start < end) {
+                    int mid = (start + end) >>> 1;
+                    if(lis[mid] < target) {
+                        start = mid + 1;
+                    } else {
+                        end = mid;
+                    }
+                }
+                lis[end] = target;
+            }
+        }
     }
 }
 ```
 # 투 포인터
 
 # MST(Minimum Spanning Tree)
+- Spanning Tree란?
+  - 그래프 내의 모든 정점을 포함하는 트리
+    - 최소 연결 = 간선의 수가 가정 적다
+    - n개의 정점을 가지는 그래프의 최소 간선의 수는 (n-1)개이고, (n-1)개의 간선으로 연결되어 있으면 필연적으로 트리 형태가 되고 이것이 Spanning Tree
+- DFS, BFS을 이용하여 그래프에서 신장 트리를 찾을 수 있음.
+- 모든 정점들이 연결되어야 하고, 사이클을 포함해서는 안됨.
 
+- MST(Minimum Spanning Tree)란?
+  - Spanning Tree 중에서 사용된 간선들의 가중치 합이 최소인 트리
+  - 네트워크에 있는 모든 정점들을 가장 적은 수의 간선과 비용으로 연결하는 것
+- 특징
+  - 간선의 가중치의 합이 최소여야 함
+  - n개의 정점을 가지는 그래프에 대해 반드시 (n-1)개의 간선만을 사용해야 함
+  - 사이클이 포함되어서는 안됨
+- 구현 방법
+  1) Kruskal MST 알고리즘
+    - 그리디 알고리즘을 이용하여 네트워크의 모든 정점을 최소 비용으로 연결하는 최적 해답을 구하는 법
+    - Union-Find 알고리즘을 활용하여 구현
+    - 시간 복잡도 : O(ElogE)
+  
+    - 동작 방식
+      1) 그래프의 간선들을 가중치 기준 오름차순으로 정렬
+      2) 정렬된 간선 리스트를 순서대로 선택, 간선의 정점들을 연결
+      3) 정점을 연결하는 것은 Union-Find의 Union으로 구현
+      4) 간선의 두 정점 a,b가 이미 연결되어 있다면 스킵
+      5) 위 과정을 반복하여 최소 비용의 간선들만 이용하여 모든 정점이 연결됨
+  2) Prim MST 알고리즘
+  - 시작 정점에서부터 출발하여 신장트리 집합을 단계적으로 확장해나가는 방법
+  - 우선순위 큐를 활용하여 구현
+  - 시간복잡도 : O(ElogV)
+
+  - 동작 방식
+    1) 임의의 정점을 시작점으로 선택
+    2) 갈 수 있는 정점 중 가장 가중치가 작은 정점 연결
+    3) 새로운 정점 중 가중치가 가장 작은 정점으로 연결
+
+  - 코드 템플릿
+
+```java
+  import java.util.PriorityQueue;
+
+class Prim {
+    static class Edge implements Comparable<Edge> {
+        Edge(int w, int cost) {
+            this.w = w;
+            this.cost = cost;
+        }
+
+        @Override
+        public int compareTo(Edge o) {
+            return this.cost - o.cost;
+        }
+    }
+    
+    static List<Edge>[] graph;
+
+    public static void prim(int start, int n) {
+        boolean[] visit = new boolean[n + 1];
+
+        PriorityQueue<Edge> pq = new PriorityQueue<>();
+        pq.offer(new Edge(start, 0));
+        
+        int total = 0;
+        while(!pq.isEmpty()) {
+            Edge edge = pq.poll();
+            
+            int v = edge.w;
+            int cost = edge.cost;
+            
+            if(visit[v]) continue;
+            
+            visit[v] = true;
+            total += cost;
+            
+            for(Edge e : graph[v]) {
+                if(!visit[e.w]) {
+                    pq.add(e);
+                }
+            }
+        }
+    }
+}
+  ```
 # Bit Masking
