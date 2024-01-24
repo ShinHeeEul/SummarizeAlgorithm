@@ -456,3 +456,7 @@ class Prim {
   - 어떤 배낭이 있고 그 배낭안에 넣을 수 있는 최대 무게가 K라고 하자. 배낭에 넣을 수 있는 N개의 물건이 각기 다른 가치 V를 가지고 있고 각 물건마다 다른 무게 W를 가지고 있을 때, 배낭이 최대한 가치가 높은 물건들을 담을 수 있는 조합을 찾는 문제이다.
   - 해당 문제는 물건을 쪼갤 수 있는 Fraction Knapsack Problem과 물건을 쪼갤 수 없는 0-1 knapSack Problem으로 나뉜다.
 - [0-1 Knapsack Problem](https://howudong.tistory.com/106)
+- 물건 K의 무게 > 배낭 W 무게
+  - dp [K][W] = dp [K-1][W]
+- 물건 K의 무게 <= 배낭 W 무게
+  - dp [K][W] = max(dp [K-1][W], K가치 + dp [K-1][W-K무게])
