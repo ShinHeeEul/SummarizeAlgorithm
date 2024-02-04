@@ -32,7 +32,7 @@
 ## 선택 정렬 (Selection Sort)
 
 ## 위상 정렬(Topological Sort)
-- 선후 관계가 정의된 그래프 구조에서 정렬을 하기 위해 사용
+- 선후 관계가 정의된 그래프 구조(순서가 정해진 작업)에서 정렬을 하기 위해 사용
 - 끝난 후 진입차수가 0이 아닌 노드가 있다면 순환이 존재한다는 것
 - 시간 복잡도 : O(V + E)
 
@@ -46,10 +46,33 @@
 - 코드 템플릿
 
 ```java
+import java.util.LinkedList;
+
 class Topological {
-    public void topological() {
-        
+  ArrayList<Integer>[] graph = new ArrayList[N+1];
+  Queue<Integer> q = new LinkedList<>();
+  int[] edgeCount = new int[9];
+  
+  public void topological() {
+    
+    for(int i = 1; i < N; i++) {
+        if(edgeCount[i] == 0) {
+            q.offer(i);
+        }
     }
+    
+    while(!q.isEmpty()) {
+        int nodeNo = q.poll();
+        
+        List<Integer> list = graph.get(nodeNo);
+        
+        for(int i = 0; i < list.size(); i++) {
+            if(--edgeCount[list.get(i)] == 0) {
+                q.offer(list.get(i));
+            }
+        }
+    }
+  }
 }
 ```
 
@@ -80,6 +103,7 @@ class Topological {
 - 코드 템플릿
 ```java
 class UnionFind {
+    
     boolean union(int x, int y) {
         x = find(x);
         y = find(y);
