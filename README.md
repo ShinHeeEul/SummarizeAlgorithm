@@ -181,7 +181,6 @@ class BellmanFord {
                 System.out.println("음수");
                 return;
             }
-
         }
     }
 }
@@ -473,6 +472,12 @@ class Prim {
   - Bottom-Up
     - 초기조건을 기반으로 차곡차곡 데이터를 쌓아가 큰 문제의 결과를 도출하는 과정
 - 정형화된 코드 템플릿은 없는 듯하다.
+## DP 예시
+- 계단
+- 냅색
+- LCS
+- 트리 만들기
+- 블록 채우기
 
 # 냅색(Knapsack)
 -  Knapsack Problem, 배낭문제는 다이나믹 프로그래밍에서 매우 유명한 문제
@@ -480,7 +485,432 @@ class Prim {
   - 어떤 배낭이 있고 그 배낭안에 넣을 수 있는 최대 무게가 K라고 하자. 배낭에 넣을 수 있는 N개의 물건이 각기 다른 가치 V를 가지고 있고 각 물건마다 다른 무게 W를 가지고 있을 때, 배낭이 최대한 가치가 높은 물건들을 담을 수 있는 조합을 찾는 문제이다.
   - 해당 문제는 물건을 쪼갤 수 있는 Fraction Knapsack Problem과 물건을 쪼갤 수 없는 0-1 knapSack Problem으로 나뉜다.
 - [0-1 Knapsack Problem](https://howudong.tistory.com/106)
+- dp[i][j]는 i번째 물건까지의 각 무게별 가치 최대값
 - 물건 K의 무게 > 배낭 W 무게
   - dp [K][W] = dp [K-1][W]
 - 물건 K의 무게 <= 배낭 W 무게
   - dp [K][W] = max(dp [K-1][W], K가치 + dp [K-1][W-K무게])
+
+# 비트 필드(Bit Field)를 이용한 다이나믹 프로그래밍
+- 방문 배열을 응용한 비트 필드
+
+# 세그먼트 트리
+- 어쩔 세그~
+```java
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.util.Objects;
+
+public class Main {
+  static Node[] A;
+  static int size;
+  public static void main(String[] args) throws Exception {
+    int N =  read();
+    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    size = 1;
+    while(size < N) {
+      size <<= 1;
+    }
+    A = new Node[size * 2 + 1];
+    for(int i = 0; i < size * 2 + 1; i++) {
+      A[i] = new Node(Integer.MAX_VALUE,Integer.MAX_VALUE);
+    }
+    for(int i = size + 1; i < size + N + 1; i++) {
+      A[i] = new Node(i - size, read());
+    }
+    update();
+
+    int M =  read();
+    while(M --> 0) {
+      int a =  read();
+      if(a == 1) {
+        updateValue(new Node(read(), read()));
+        continue;
+      }
+      int i =  read();
+      int j =  read();
+      bw.write(query(i, j, 2, 1, size).index + "\n");
+    }
+    bw.flush();
+
+  }
+
+  private static Node query(int left, int right, int node, int start, int end) {
+    if(left > end || right < start) {
+      return new Node(Integer.MAX_VALUE, Integer.MAX_VALUE);
+    }
+    if(left <= start && end <= right) {
+      return A[node];
+    }
+    int mid = (start + end) / 2;
+    Node n1 = query(left, right, node * 2 - 1, start, mid);
+    Node n2 = query(left, right, node * 2, mid + 1, end);
+    if(n1.compareTo(n2) > 0) {
+      return n1;
+    }
+    return n2;
+  }
+
+  private static void updateValue(Node node) {
+    int index = size + node.index;
+    A[index].val = node.val;
+
+    while(index > 1) {
+      int current = (index + 1) >> 1;
+
+      //이거 고치기
+      Node n1 = A[(current << 1) -1];
+      Node n2 =  A[current << 1];
+      if(n1.compareTo(n2) > 0) {
+        A[current] = n1;
+
+      } else {
+        A[current] = n2;
+      }
+      index = current;
+    }
+  }
+
+  private static void update() {
+    int size = A.length - 1;
+    while(size > 1) {
+      Node n1 =  A[size-1];
+      Node n2 = A[size];
+      if(n1.compareTo(n2) > 0) {
+        A[(size + 1) >> 1] = n1;
+      } else {
+        A[(size + 1) >> 1] = n2;
+      }
+      size -= 2;
+    }
+  }
+
+  private static class Node implements Comparable<Node> {
+    int val;
+    int index;
+
+    public Node(int index, int val) {
+      this.index = index;
+      this.val = val;
+    }
+
+    @Override
+    public int compareTo(Node o) {
+      if(o.val == this.val) {
+        return o.index - this.index;
+      }
+      return  o.val -  this.val;
+    }
+  }
+  
+  private static int read() throws Exception {
+    int d, o;
+    boolean negative = false;
+    d = System.in.read();
+
+    if (d == '-') {
+      negative = true;
+      d = System.in.read();
+    }
+    o = d & 15;
+    while ((d = System.in.read()) > 32)
+      o = (o << 3) + (o << 1) + (d & 15);
+
+    return negative? -o:o;
+  }
+
+}
+
+
+```
+
+# 느리게(lazy) 갱신되는 세그먼트 트리
+- 어쩔 세그~
+- 코드 템플릿
+```java
+import java.io.*;
+
+public class Main {
+  static long[] segment;
+  static long[] lazy;
+  static int size;
+  public static void main(String[] args) throws Exception {
+    int N = read();
+    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    size = 1;
+    while(size < N) {
+      size <<= 1;
+    }
+
+    segment = new long[(size << 1) + 1];
+    lazy = new long[(size << 1) + 1];
+
+    for(int i = size + 1; i < size + N + 1; i++) {
+      segment[i] = read();
+    }
+
+    int segmentSize = segment.length - 1;
+
+    while(segmentSize > 1) {
+      segment[(segmentSize + 1) >> 1] = segment[segmentSize] + segment[segmentSize - 1];
+      segmentSize-=2;
+    }
+
+    int M = read();
+
+    for(int i = 0; i < M ;i++) {
+      int a = read();
+      if(a == 2) {
+        int node = read();
+        query(node, node, 2, 1, size);
+        bw.write(segment[size + node] + "\n");
+        continue;
+      }
+      updateRange(read(), read(), 2, 1, size, read());
+    }
+
+    bw.flush();
+
+  }
+
+  private static void updateRange(int left, int right, int node, int start, int end, int diff) {
+    if(right < start || left > end) {
+      return;
+    }
+
+    if(left <= start && end <= right) {
+      lazy[node] += diff;
+      int segmentSize = (node + 1) >> 1;
+      while(segmentSize > 1) {
+        segment[segmentSize] += (long) diff * (end - start + 1);
+        segmentSize = (segmentSize + 1) >> 1;
+      }
+      return;
+    }
+    int mid = (start + end) / 2;
+    updateRange(left, right, node * 2 - 1, start, mid, diff);
+    updateRange(left, right, node * 2, mid+1, end, diff);
+  }
+
+  private static void query(int left, int right, int node, int start, int end) {
+    if(lazy[node] != 0) {
+      segment[node] += lazy[node] * (end - start + 1);
+      updateLazy(node);
+    }
+    if(right < start || left > end) {
+      return;
+    }
+
+    if(left <= start && end <= right) {
+      return;
+    }
+    int mid = (start + end) / 2;
+    query(left, right, node * 2 - 1, start, mid);
+    query(left, right, node * 2, mid+1, end);
+  }
+
+  private static void updateLazy(int i) {
+    long tmp = lazy[i];
+    lazy[i] = 0;
+    if(size < i) return;
+    lazy[i * 2] += tmp;
+    lazy[i * 2 - 1] += tmp;
+  }
+
+
+  private static int read() throws Exception {
+    int d, o;
+    boolean negative = false;
+    d = System.in.read();
+
+    if (d == '-') {
+      negative = true;
+      d = System.in.read();
+    }
+    o = d & 15;
+    while ((d = System.in.read()) > 32)
+      o = (o << 3) + (o << 1) + (d & 15);
+
+    return negative? -o:o;
+  }
+
+}
+
+```
+
+# 강한 결합 요소 - SCC (Strong Connected Component)
+- `강하게 결합된 정점 집합`을 의미
+- 서로 긴밀하게 연결되어 있다고 하여 강한 결합 요솧라고 함.
+- 특징
+  - 같은 SCC에 속하는 두 정점은 서로 도달이 가능하다는 특징이 있음.
+  - 사이클이 발생하는 경우 무조건 SCC에 해당
+  - 무향 그래프라면 그 그래프는 무조건 SCC
+  - 일반적으로 코사라주 알고리즘이 더 구현은 쉽지만 타잔 알고리즘이 더 적용이 쉬움.
+
+## 타잔 알고리즘(Tarjan's Algorithm)
+- 순방향 간선, 역방향 간선, 교차 간선을 다 고려해야 됨
+- 모든 정점에 대해 ALL DFS(모든 정점에서 수행되는 DFS) 한번으로 모든 SCC를 구하는 알고리즘.
+- 부모에서 자식으로 나아가는 알고리즘으로 부모로 다시 돌아올 수 있는 경로에 한해 SCC가 성립됨.
+- 타잔 알고리즘은 위상 정렬을 이용한 방법으로 생성되는 SCC들은 위상 정렬의 역순으로 생성된다.
+- 시간복잡도 : O(V + E)
+- 구현 방법
+  1. ALL DFS를 돌리며 Spanning Tree를 만들어 갈 때 DFS의 호출 순서에 따라 정점을 stack에 push
+  2. 간선 분류를 통해 먼저 호출되는 정점이 더 높은 위치를 가진다고 생각할 때 가장 높이 올라갈 수 있는 정점을 찾음.
+  3. 이때 here -> there이 교차 간선이지만 there이 아직 SCC에 속하지 않는다면 discover[there]을 고려해줌.
+  4. DFS가 끝나기 전에 ret과 discover[here]가 같다면 stack에서 pop하면서 here가 나올 때까지 같은 SCC로 분류함.
+[참고](https://m.blog.naver.com/PostView.nhn?blogId=kks227&logNo=220802519976&referrerCode=0&searchKeyword=scc)
+
+## 코사라주 알고리즘(Kosaraju's Algorithm)
+
+- DFS를 정방향으로, 역방향으로 한번씩 하여 구현하는 알고리즘.
+- 시간복잡도 : O(V + E)
+- 구현 방법
+  1. 모든 정점에 대해 정방향 그래프를 DFS로 수행하며 끝나는 순서대로 스택에 삽입
+     1. 방문하지 않은 정점이 있는 경우에는 해당 정점부터 다시 DFS를 수행한다.
+     2. 이로써 모든 정점을 방문하며 DFS를 완료하여, 스택에 모든 정점을 담는다.
+  2. 스택의 top에서부터 pop()을 진행하며 순서대로 역방향 그래프에서 DFS를 수행하며 한번 수행에 탐색되는 모든 정점들을 같은 SCC로 묶음. 
+     1. 이 과정은 스택이 빌 때까지 진행
+     2. 만약 스택의 top에 위치한 정점이 이미 방문되었다면 pop()만 함.
+```java
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Stack;
+
+public class Main {
+
+
+    static Stack<Integer> stack = new Stack<>();
+    static ArrayList<Integer>[] list;
+    static ArrayList<Integer>[] reverseList;
+    static ArrayList<ArrayList<Integer>> answer;
+    static ArrayList<Integer> ans;
+    static boolean[] visited;
+
+    //코사라주 알고리즘
+    public static void main(String[] args) throws Exception {
+        int V = read();
+        int E = read();
+
+        list = new ArrayList[V+1];
+        reverseList = new ArrayList[V + 1];
+        visited = new boolean[V+1];
+        answer = new ArrayList<>();
+
+        for(int i = 0; i <= V; i++) {
+            list[i] = new ArrayList<>();
+            reverseList[i] = new ArrayList<>();
+        }
+
+        for(int i = 0; i < E; i++) {
+            int a = read();
+            int b = read();
+            list[a].add(b);
+            reverseList[b].add(a);
+        }
+
+        // SCC
+        for(int i = 1; i <= V; i++) {
+            if(visited[i]) continue;
+            visited[i] = true;
+            dfs(i);
+        }
+
+        visited = new boolean[V+1];
+
+        while(!stack.isEmpty()) {
+            int i = stack.pop();
+            if(visited[i]) continue;
+            ans = new ArrayList<>();
+            visited[i] = true;
+            reverseDfs(i);
+            answer.add(ans);
+        }
+        StringBuilder sb = new StringBuilder();
+        System.out.println(answer.size());
+
+        for (ArrayList<Integer> ans : answer) Collections.sort(ans);
+        answer.sort(Comparator.comparingInt(o1 -> o1.get(0)));
+
+        for (ArrayList<Integer> ans : answer) {
+            for (int j : ans) sb.append(j).append(" ");
+            sb.append("-1\n");
+        }
+
+        System.out.println(sb);
+
+    }
+
+    public static void reverseDfs(int i) {
+        ans.add(i);
+        for(int j : reverseList[i]) {
+            if(visited[j]) continue;
+            visited[j] = true;
+            reverseDfs(j);
+        }
+    }
+
+    public static void dfs(int i) {
+        for(int j : list[i]) {
+            if(visited[j]) continue;
+            visited[j] = true;
+            dfs(j);
+        }
+        stack.push(i);
+    }
+
+    private static int read() throws Exception {
+        int d, o;
+        boolean negative = false;
+        d = System.in.read();
+
+        if (d == '-') {
+            negative = true;
+            d = System.in.read();
+        }
+        o = d & 15;
+        while ((d = System.in.read()) > 32)
+            o = (o << 3) + (o << 1) + (d & 15);
+
+        return negative? -o:o;
+    }
+
+}
+
+```
+
+# 최소 공통 조상 - LCA(Lowest Common Ancestor)
+
+# 볼록 껍질 알고리즘
+
+# CCW(Counter Clock Wise)
+- 3개의 점 r, p, q가 있을 때 벡터 rp를 기준으로 점 q가 어느 위치(왼쪽, 같은 직선, 오른쪽)에 있는지 판별하는 방법
+- 벡터의 외적
+- 왼쪽에 있을 때(반시계 방향일 때) : 1
+- 같은 직선상에 있을 때(직선일 때) : 0
+- 오른쪽에 있을 때(시계 방향일 때) : -1
+
+## 외적
+- 두 벡터 사이의 곱 연산
+- 외적의 결과물은 두 벡터가 사이에 이루는 평행 사변형의 면적
+- 교환 법칙이 성립하지 않음.
+- 오른손 법칙이 성립
+- 신발끈 공식을 사용하여 벡터의 곱을 판단.
+
+## 신발끈 공식
+- 볼록 및 오목 다각형의 넓이를 구하는 공식
+- 반시계 방향(혹은 시계 방향)으로 정렬된 점들로 이루어진 넓이를 구함
+![img1.daumcdn.png](..%2F..%2F..%2FSHINHE%7E1%2FAppData%2FLocal%2FTemp%2Fimg1.daumcdn.png)
+![img.png](img.png)
+- 여기서는 세 점의 방향을 구해야 하므로 `(x1y2 + x2y3 + x3y1) - (x2y1 * x3y2 * x1y3)` 로 구해짐
+```java
+class CCW {
+
+        public static int ccw(int[][] node) {
+
+            int a = (node[0][0] * node[1][1]) + (node[1][0] * node[2][1]) + (node[2][0] * node[0][1]);
+            int b = (node[0][1] * node[1][0]) + (node[1][1] * node[2][0]) + (node[2][1] * node[0][0]);
+            return a - b;
+        }
+
+```
