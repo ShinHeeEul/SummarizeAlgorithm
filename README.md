@@ -914,3 +914,7 @@ class CCW {
         }
 
 ```
+
+# KMP 알고리즘
+- `Word`와 `Pattern`이 일치하는 지를 빠르게 비교하는 알고리즘
+- O(N+M) Word의 길이와 Pattern의 길이를 더한 값
