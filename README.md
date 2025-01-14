@@ -900,8 +900,9 @@ public class Main {
 ## 신발끈 공식
 - 볼록 및 오목 다각형의 넓이를 구하는 공식
 - 반시계 방향(혹은 시계 방향)으로 정렬된 점들로 이루어진 넓이를 구함
-![img1.daumcdn.png](..%2F..%2F..%2FSHINHE%7E1%2FAppData%2FLocal%2FTemp%2Fimg1.daumcdn.png)
-![img.png](img.png)
+- ![image](https://github.com/user-attachments/assets/6a46c546-24d9-4dcd-8622-1c491ee26cd5)
+![image](https://github.com/user-attachments/assets/19edab0c-eb5b-4a87-8d2d-3f59ee63e221)
+
 - 여기서는 세 점의 방향을 구해야 하므로 `(x1y2 + x2y3 + x3y1) - (x2y1 * x3y2 * x1y3)` 로 구해짐
 ```java
 class CCW {
