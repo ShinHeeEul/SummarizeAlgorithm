@@ -930,7 +930,7 @@ class KMP
 	static int[] table;
 	static int count;
 	
-	public static void KMP_Table(String pattern) {
+	public static void failureFunction(String pattern) {
 		
 		// 접두사 인덱스
 		int pIdx = 0;
@@ -953,7 +953,7 @@ class KMP
 		}
 	}
 	
-	public static void KMP_Search(String word, String pattern) {
+	public static void KMP(String word, String pattern) {
 		
 		// 접두사 인덱스
 		int pIdx = 0;
