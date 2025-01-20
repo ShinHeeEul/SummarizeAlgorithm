@@ -543,7 +543,24 @@ class BitFieldDP {
 	
 }
 ```
-
+- 정해(재귀를 이용한 방법)
+```java
+    private static int tsp(int city, int visited) {
+        if (visited == (1 << n) - 1)
+            return distance[city][0];
+        if (dp[city][visited] != -1)
+            return dp[city][visited];
+        int result = Integer.MAX_VALUE;
+        for (int nextCity = 0; nextCity < n; nextCity++) {
+            if ((visited & (1 << nextCity)) != 0)
+                continue;
+            int temp = distance[city][nextCity] + tsp(nextCity, visited | (1 << nextCity));
+            result = Math.min(result, temp);
+        }
+        dp[city][visited] = result;
+        return result;
+    }
+```
 # 세그먼트 트리
 - 어쩔 세그~
 ```java
