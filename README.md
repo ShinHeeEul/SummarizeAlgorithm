@@ -493,6 +493,56 @@ class Prim {
 
 # 비트 필드(Bit Field)를 이용한 다이나믹 프로그래밍
 - 방문 배열을 응용한 비트 필드
+- dp의 인덱스를 비트마스킹으로 관리하자.
+- 응용이 무궁무진하니 다양한 방법을 보고 익히자
+
+```java
+import java.util.*;
+import java.io.*;
+
+class BitFieldDP {
+	
+	static int[] dp;
+	static int[][] arr;
+	static int N;
+	static final int DEFAULT = Integer.MAX_VALUE >> 1;
+	public static void main(String args[]) throws Exception {
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		N = Integer.parseInt(br.readLine());
+		arr = new int[N][N];
+		dp = new int[1 << N];
+		
+		for(int i = 0; i < N; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			for(int j = 0; j < N; j++) {
+				arr[i][j] = Integer.parseInt(st.nextToken());
+			}
+		}
+		
+		Arrays.fill(dp, DEFAULT);
+		
+		System.out.println(DP(N, (1 << N) - 1));
+		
+	}
+	
+	public static int DP(int n, int k) {
+		if(dp[k] != DEFAULT) return dp[k];
+		
+		for(int i = 0; i < N; i++) {
+			if((k & (1 << i)) == 0) continue;
+			
+			int next = k ^ (1 << i);
+			
+			if(dp[k] == DEFAULT) dp[k] = DP(n - 1, next) + arr[n - 1][i];
+			else dp[k] = Math.min(dp[k], DP(n - 1, next) + arr[n - 1][i]);
+		}
+		return dp[k];
+	}
+	
+}
+```
 
 # 세그먼트 트리
 - 어쩔 세그~
