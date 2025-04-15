@@ -1063,7 +1063,7 @@ class KMP
 - 그렇다면 나눗셈을 곱셈으로 바꾸는 역원을 구한 뒤 모듈러 연산을 하면 되지 않을까?
 - 그리고 두 수가 서로소이면서 `MOD`가 소수라면 페르마의 소정리가 적용되어, $a^{(p - 2)} ≡ a^{-1} ( mod p)$가 된다.
 
--[페르마의 소정리 증명](https://m.blog.naver.com/a4gkyum/220768006509)
+- [페르마의 소정리 증명](https://m.blog.naver.com/a4gkyum/220768006509)
 
 ```java
 public static long combination(int n, int r) {
