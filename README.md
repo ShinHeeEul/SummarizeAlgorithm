@@ -1055,3 +1055,60 @@ class KMP
 - 만약 최장이 아닌 접두사와 현재 위치 이전에 접두사 만큼 일치한다면, Pattern의 접두사를 생략하고 Pattern의 PIdx 값과 현재 위치와 비교할 수 있다.
 - 그리고 둘이 일치한다는 말은, 겹치는 길이가 최장인 접두사(pIdx)의 최장 접두사(table[pIdx])가 일치한다는 것이고 (pIdx의 접두 접미가 같기 떄문) table[pIdx] + 1 위치부터 살펴불 수 있다는 것이다. (배열 시작을 0이냐 1로 두냐에 따라 1의 오차가 있을 순 있다)
 - 이는 접두사 값을 얼마나 살릴 수 있느냐를 의미한다. 즉, 현재 값이 패턴의 어느쯤 와 있는 지 알아내서 해당 부분부터 비교하게 한다.
+
+# 페르마의 소정리 (모듈러의 역원)
+## 나눗셈에서도 나머지 연산을 분배 시키는 방법 (서로소이면서 MOD가 소수일 경우 적용)
+
+- 모듈러 연산(%)는 덧셈, 뺄셈, 곱셉의 분배 규칙은 성립하나, 나눗셈에 분배 규칙이 성립하지 않는다.
+- 그렇다면 나눗셈을 곱셈으로 바꾸는 역원을 구한 뒤 모듈러 연산을 하면 되지 않을까?
+- 그리고 두 수가 서로소이면서 `MOD`가 소수라면 페르마의 소정리가 적용되어, $a^{(p - 2)} ≡ a^{-1} ( mod p)$가 된다.
+
+-[페르마의 소정리 증명](https://m.blog.naver.com/a4gkyum/220768006509)
+
+```java
+public static long combination(int n, int r) {
+		
+		// n! / (n-r)!r! % MOD
+		// = (n! / r!) / (n-r)! % MOD 
+		// = (n! / r!) % MOD * (Math.pow((n-r)!, -1) % MOD) (모듈러는 곱셈의 분배 법칙이 성립)
+		// = (n! / r!) % MOD * (Math.pow((n-r)!, MOD - 2) % MOD) (페르마의 소정리, 모듈러의 역원) 
+		r = Math.max(n - r, r);
+		long numerator = 1; // 분자
+		
+		// (n! / r!) % MOD
+		for(int i = r + 1; i <= n; i++) {
+			numerator = (numerator * i) % MOD;
+		}
+		
+		// (n-r)! % MOD
+		long denominator = 1; // 분모
+		for(int i = 1; i <= (n-r); i++) {
+			denominator = (denominator * i) % MOD;
+		}
+		
+		// pow((n-r)!, MOD - 2) mod MOD = pow(n-r)!, -1) mod MOD (모듈러의 역원)
+		denominator = pow(denominator, MOD - 2);
+		
+		return (numerator * denominator) % MOD;
+	}
+	
+	// a ^ b % MOD
+	// 분할 정복..? 이분 계산..?
+	public static long pow(long a, long b) {
+		
+		long result = 1;
+		
+		while(b > 0) {
+			// a ^ b = a * (a ^ (b-1))
+			if((b & 1) == 1) {
+				result = (a * result) % MOD;
+			}
+			
+			// a ^ b = (a ^ 2) ^ (b/2) (b % 2 == 0)
+			a = (a * a) % MOD;
+			b >>= 1;
+		}
+		
+		return result;
+	}
+```
