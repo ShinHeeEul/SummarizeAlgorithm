@@ -1112,3 +1112,18 @@ public static long combination(int n, int r) {
 		return result;
 	}
 ```
+
+# 유클리드 호제법 (최대 공배수, 최소 공약수)
+## 최대 공배수
+```java
+public static long gcd(long a, long b) {
+	if(b == 0) return a;
+	return gcd(b, a % b);
+}
+```
+## 최소 공약수
+```java
+public static int lcm(int a, int b, int gcd) {
+  return (a * b) / gcd
+}
+```
