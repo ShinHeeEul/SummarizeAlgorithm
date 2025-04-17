@@ -948,7 +948,7 @@ public class Main {
 
 # 최소 공통 조상 - LCA(Lowest Common Ancestor)
 
-# 볼록 껍질 알고리즘
+
 
 # CCW(Counter Clock Wise)
 - 3개의 점 r, p, q가 있을 때 벡터 rp를 기준으로 점 q가 어느 위치(왼쪽, 같은 직선, 오른쪽)에 있는지 판별하는 방법
@@ -970,7 +970,7 @@ public class Main {
 - ![image](https://github.com/user-attachments/assets/6a46c546-24d9-4dcd-8622-1c491ee26cd5)
 ![image](https://github.com/user-attachments/assets/19edab0c-eb5b-4a87-8d2d-3f59ee63e221)
 
-- 여기서는 세 점의 방향을 구해야 하므로 `(x1y2 + x2y3 + x3y1) - (x2y1 * x3y2 * x1y3)` 로 구해짐
+- 여기서는 세 점의 방향을 구해야 하므로 `(x1y2 + x2y3 + x3y1) - (x2y1 + x3y2 + x1y3)` 로 구해짐
 ```java
 class CCW {
 
@@ -981,6 +981,94 @@ class CCW {
             return a - b;
         }
 
+```
+
+# 볼록 껍질 알고리즘
+
+[Monotone Chain(Andrew's Algorithm) 알고리즘](https://00ad-8e71-00ff-055d.tistory.com/101)
+
+![image](https://github.com/user-attachments/assets/40facb18-3002-4bae-970a-8c4eaf85ff3d)
+
+![images_turtle601_post_71f09487-0d4a-433b-9fab-7a8e74310e82_ezgif com-gif-maker](https://github.com/user-attachments/assets/40878a79-ed8a-4485-b927-08a53088db70)
+
+
+
+- 2차원 평면에서 주어진 점들을 모두 포함하는 최소 크기의 다각형
+- Monotone Chain 시간 복잡도 : $O(Nlog(N))$
+- 윗껍질과 아래 껍질로 나누어 생각한다.
+## 풀이 과정
+1. x 좌표가 작을 때, 같다면 y 좌표가 작은 순서로 정렬한다. (이 순서로 탐색해야 시계, 반시계로 돌릴 때 불필요한 점들이 없어지더라)
+2. 스택에 초반 두개의 좌표를 넣는다. (x좌표, y좌표가 제일 작은 점과 그 다음으로 작은 점)
+3. 그 다음 점을 보면서
+	3-1. 해당 점과 가장 최근 벡터가 시계 방향으로 배치되어 있다면 감싸는 형태가 되므로 윗 껍질을 구성하는 녀석으로 판단하여 Stack에 넣는다. (구문 상으로는 break)
+	3-2. 반시계나 직선 배치라면 Stack을 pop한다.
+4.  다시 해당 점과 가장 최근 두 점의 벡터가 시계 방향으로 배치되어 있는지 확인한다.
+5.  해당 점을 Stack에 넣는다.
+6. 아래껍질도 윗껍질과 똑같은 원리로 반시계 방향으로 검사한다.
+
+```java
+	static Node[] arr;
+	static int N;
+
+	// 윗껍질 구성 - 시계 방향으로 도는 껍질 구성
+	// 아래껍질 구성 - 반시계 방향으로 도는 껍질 구성
+	public static int convexHull(boolean isUp) {
+		Stack<Node> stack = new Stack<>();
+		
+		stack.add(arr[0]);
+		stack.add(arr[1]);
+		
+		for(int i = 2; i < N; i++) {
+			Node cur = arr[i];
+			int size = stack.size();
+			// stack에 벡터를 구성할 최소한의 점들은 있어야 하므로 1보다 작을 때까지
+			while((size = stack.size()) > 1) {
+				long ccwResult = ccw(stack.get(size - 2), stack.get(size - 1), cur);
+				
+				if(isUp) ccwResult = -ccwResult;
+
+				// 맞는 방향이면? push
+				if(ccwResult > 0) break;
+				// 틀린 방향이면? 해당 지점 빼주고
+				else stack.pop();
+
+			}
+			stack.add(cur);
+		}
+		
+		return stack.size();
+	}
+	
+	public static long ccw(Node p, Node q, Node r) {
+		return (p.x * q.y + q.x * r.y + r.x * p.y) - (q.x * p.y + r.x * q.y + p.x * r.y);
+	}
+	
+	static class Node implements Comparable<Node> {
+		
+		long x;
+		long y;
+		
+		public Node(long x, long y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		@Override
+		public int compareTo(Node o) {
+			// 기준점을 좌측 최 하단인 녀석으로
+
+			// x가 같다면 y가 더 작은 애를 기준점
+			if(o.x == this.x) {
+				return (int) (this.y - o.y);
+			}
+			
+			// y가 더 작은애 먼저
+			return (int) (this.x - o.x);
+		}
+		
+		
+		
+	}
 ```
 
 # KMP 알고리즘
