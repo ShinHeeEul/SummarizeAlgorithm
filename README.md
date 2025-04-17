@@ -1057,9 +1057,14 @@ class KMP
 - 이는 접두사 값을 얼마나 살릴 수 있느냐를 의미한다. 즉, 현재 값이 패턴의 어느쯤 와 있는 지 알아내서 해당 부분부터 비교하게 한다.
 
 # 페르마의 소정리 (모듈러의 역원)
+## 모듈러 연산(%)에서 덧셈, 뺄셈, 곱셈의 분배 규칙
+- 덧셈 : (a + b) % MOD = a % MOD + b % MOD
+- 뺄셈 : (a - b) % MOD = (a % MOD - b % MOD + MOD) % MOD (음수가 되면 잘못된 연산이 될 수도 있으므로 주의하자)
+- 곱셈 : (a * b) % MOD = a % MOD * b % MOD
+
 ## 나눗셈에서도 나머지 연산을 분배 시키는 방법 (서로소이면서 MOD가 소수일 경우 적용)
 
-- 모듈러 연산(%)는 덧셈, 뺄셈, 곱셉의 분배 규칙은 성립하나, 나눗셈에 분배 규칙이 성립하지 않는다.
+- 모듈러 연산(%)는 덧셈, 뺄셈, 곱셈의 분배 규칙은 성립하나, 나눗셈에 분배 규칙이 성립하지 않는다.
 - 그렇다면 나눗셈을 곱셈으로 바꾸는 역원을 구한 뒤 모듈러 연산을 하면 되지 않을까?
 - 그리고 두 수가 서로소이면서 `MOD`가 소수라면 페르마의 소정리가 적용되어, $a^{(p - 2)} ≡ a^{-1} ( mod p)$가 된다.
 
@@ -1093,7 +1098,7 @@ public static long combination(int n, int r) {
 	}
 	
 	// a ^ b % MOD
-	// 분할 정복..? 이분 계산..?
+	// 분할 정복을 이용한 거듭 제곱
 	public static long pow(long a, long b) {
 		
 		long result = 1;
@@ -1112,6 +1117,29 @@ public static long combination(int n, int r) {
 		return result;
 	}
 ```
+
+# 분할정복을 이용한 거듭 제곱
+## O(logN)에 거듭 제곱을 하면서 MOD를 하는 방법
+```java
+	public static long pow(long a, long b) {
+		
+		long result = 1;
+		
+		while(b > 0) {
+			// a ^ b = a * (a ^ (b-1))
+			if((b & 1) == 1) {
+				result = (a * result) % MOD;
+			}
+			
+			// a ^ b = (a ^ 2) ^ (b/2) (b % 2 == 0)
+			a = (a * a) % MOD;
+			b >>= 1;
+		}
+		
+		return result;
+	}
+```
+
 
 # 유클리드 호제법 (최대 공배수, 최소 공약수)
 ## 최대 공배수
