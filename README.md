@@ -1137,7 +1137,7 @@ class KMP
 
 ```
 ![20250114_203949](https://github.com/user-attachments/assets/d48a5819-3c27-49a9-8e55-ebc95a36caa4)
-- 왜 패턴을 찾을 떄 pIdx = table[pIdx - 1]인가?
+- 왜 패턴을 찾을 때 pIdx = table[pIdx - 1]인가?
 - table[i]는 0부터 i번쨰 문자일때 접두사/접미사가 얼마나 겹치는가 이다.
 - 만약 table[pIdx - 1], 즉 현재 위치의 값이 초기 접두사 이후 값과 일치하는 지를 비교한다는 것이다.
 - 만약 최장이 아닌 접두사와 현재 위치 이전에 접두사 만큼 일치한다면, Pattern의 접두사를 생략하고 Pattern의 PIdx 값과 현재 위치와 비교할 수 있다.
